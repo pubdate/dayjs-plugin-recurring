@@ -108,7 +108,7 @@ export default class Recurring {
     } else { // (n) => Dayjs[]
       if (n === 0) return []
       if (this.first() == null) return null
-      if (!this.#validateQuery(this.first()!, query)) return null
+      if (!this.#validateQuery(this.first()!, query)) return []
       return [this.first()!, ...this.next(this.first()!, n - 1, query)]
     }
   }
@@ -127,7 +127,7 @@ export default class Recurring {
     } else { // (n) => Dayjs[]
       if (n === 0) return []
       if (this.last() == null) return null
-      if (!this.#validateQuery(this.last()!, query)) return null
+      if (!this.#validateQuery(this.last()!, query)) return []
       return [...this.prev(this.last()!, n - 1, query), this.last()!]
     }
   }
