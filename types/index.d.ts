@@ -37,24 +37,27 @@ declare module 'dayjs' {
      * @returns Last chronological occurrence. Or `null` when the provided `recurring` does not have a `end` and there is no limit.
      *
      * @example
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first() // 2020-01-01
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first() // null
-     */
-    last(): Dayjs | null
-    /**
-     * @returns Last `n` chronological occurrences.
-     *
-     * @example
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last() // 2030-01-01
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last() // null
      */
-    last(n: number, query?: Query): readonly Dayjs[] | null
+    last(): Dayjs | null
     /**
-     * @returns Previous chronological occurrence. Or `null` when the the current occurrence is the first one.
+     * @returns Last `n` chronological occurrences. Or `null` when the provided `recurring` does not have a `end` and there is no limit.
      *
      * @example
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last(3) // [2028-01-01, 2029-01-01, 2030-01-01]
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last(3) // null
+     */
+    last(n: number, query?: Query): readonly Dayjs[] | null
+    /**
+     * @returns Previous chronological occurrence. Or `null` when the the current occurrence is the last one.
+     *
+     * @example
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev() // 2024-01-01
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev() // 2024-01-01
+     *
+     * dayjs('2020-01-01').recurring('R/2020-01-01/P1Y').prev() // null
+     * dayjs('2020-01-01').recurring('R10/P1Y/2030-01-01').prev() // null
      */
     prev(): Dayjs | null
     /**
