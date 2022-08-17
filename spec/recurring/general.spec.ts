@@ -14,20 +14,20 @@ describe('Recurring', () => {
         expect(Recurring.parse('R/P1Y2M3W4DT5H6M7S')).toEqual({ duration })
       })
 
-      test('it returns undefined when the value is invalid', () => {
-        expect(Recurring.parse('abc')).toEqual(undefined)
-        expect(Recurring.parse('abc R5/2020-01-01/P1Y2M3W4DT5H6M7S')).toEqual(undefined)
-        expect(Recurring.parse('R5/2020-01-01/P1Y2M3W4DT5H6M7S abc')).toEqual(undefined)
+      test('it throws an error when the value is invalid', () => {
+        expect(() => Recurring.parse('abc')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+        expect(() => Recurring.parse('abc R5/2020-01-01/P1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+        expect(() => Recurring.parse('R5/2020-01-01/P1Y2M3W4DT5H6M7S abc')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
 
-        expect(Recurring.parse('abc/2020-01-01/P1Y2M3W4DT5H6M7S')).toEqual(undefined)
-        // TODO: expect(Recurring.parse('R5/abc/P1Y2M3W4DT5H6M7S')).toEqual(undefined)
-        expect(Recurring.parse('R5/2020-01-01/abc')).toEqual(undefined)
+        expect(() => Recurring.parse('abc/2020-01-01/P1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+        // TODO: expect(() => Recurring.parse('R5/abc/P1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+        expect(() => Recurring.parse('R5/2020-01-01/abc')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
 
-        expect(Recurring.parse('5/2020-01-01/P1Y2M3W4DT5H6M7S')).toEqual(undefined)
-        expect(Recurring.parse('2020-01-01/P1Y2M3W4DT5H6M7S')).toEqual(undefined)
+        expect(() => Recurring.parse('5/2020-01-01/P1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+        expect(() => Recurring.parse('2020-01-01/P1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
 
-        expect(Recurring.parse('R5/2020-01-01/2030-01-01')).toEqual(undefined)
-        // TODO: expect(Recurring.parse('R5/P1Y/P1Y')).toEqual(undefined)
+        expect(() => Recurring.parse('R5/2020-01-01/2030-01-01')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+        // TODO: expect(() => Recurring.parse('R5/P1Y/P1Y')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
       })
     })
 
@@ -50,10 +50,10 @@ describe('Recurring', () => {
       })
     })
 
-    test('it returns undefined when the value is neither a string nor an object', () => {
-      expect(Recurring.parse(1 as any)).toEqual(undefined)
-      expect(Recurring.parse(null as any)).toEqual(undefined)
-      expect(Recurring.parse(new Date() as any)).toEqual(undefined)
+    test('it throws an error when the value is neither a string nor an object', () => {
+      expect(() => Recurring.parse(1 as any)).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+      expect(() => Recurring.parse(null as any)).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
+      expect(() => Recurring.parse(new Date() as any)).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid') // TODO: recurring_invalid
     })
   })
 

@@ -34,8 +34,8 @@ describe('dayjs-plugin-recurring', () => {
       expect(dayjs('3000-01-01').recurring('R5/P1Y2M3W4DT5H6M7S')!.recurring()).toEqual({ times: 5, duration })
     })
 
-    test('it returns undefined when recurring is invalid', () => {
-      expect(dayjs('2016-04-17T08:41:39').recurring('abc')).toBe(undefined)
+    test('it throws an error when recurring is invalid', () => {
+      expect(() => dayjs('2016-04-17T08:41:39').recurring('abc')).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_invalid')
     })
   })
 

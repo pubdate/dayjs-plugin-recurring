@@ -190,6 +190,11 @@ declare module 'dayjs' {
      */
     recurring(): Recurring | undefined
     /**
+     * @throws duration_invalid
+     * @throws duration_zero
+     * @throws duration_float
+     * @throws recurring_invalid
+     *
      * @returns A new dayjs instance with the provided recurring.
      * If the recurring has no start and no end, the dayjs instance will be used as start (or as end if `contextAsEnd` option is set to true).
      *
@@ -204,6 +209,6 @@ declare module 'dayjs' {
      * dayjs('2025-06-15').recurring('R/2020-01-01/P1Y').next() // 2026-01-01
      * dayjs('2025-06-15').recurring('R/2020-01-01/P1Y').prev() // 2025-01-01
      */
-    recurring(input?: string | Recurring, opts?: { contextAsEnd?: boolean }): Dayjs | undefined
+    recurring(input?: string | Recurring, opts?: { contextAsEnd?: boolean }): Dayjs
   }
 }

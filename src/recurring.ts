@@ -2,6 +2,7 @@ import type dayjs from 'dayjs'
 import type { ConfigType, Dayjs } from 'dayjs'
 
 import Duration from './duration'
+import { DayjsPluginRecurringError } from './errors'
 
 const REGEX_DURATION = /P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?/
 const REGEX_DATE = /.+/
@@ -51,13 +52,13 @@ export default class Recurring {
     }
   }
 
-  static parse (input: string | ParseOpts, { context, contextAsEnd }: { context?: Dayjs, contextAsEnd?: boolean } = {}): Recurring | undefined {
+  static parse (input: string | ParseOpts, { context, contextAsEnd }: { context?: Dayjs, contextAsEnd?: boolean } = {}): Recurring {
     if (input instanceof Recurring) return input
+    if ((typeof input !== 'string' && typeof input !== 'object') || input == null) throw new DayjsPluginRecurringError('recurring_invalid')
     if (typeof input === 'string') { // INPUT IS STRING
       const match = input.match(REGEX_SE)
-      if (match?.groups == null) return
+      if (match?.groups == null) throw new DayjsPluginRecurringError('recurring_invalid')
       const duration = Duration.parse(match.groups.duration_a || match.groups.duration_b) // eslint-disable-line @typescript-eslint/strict-boolean-expressions
-      if (duration == null) return
       return new Recurring(
         match.groups?.times ? +match.groups.times : undefined, // eslint-disable-line @typescript-eslint/strict-boolean-expressions
         match.groups?.start || undefined, // eslint-disable-line @typescript-eslint/strict-boolean-expressions
@@ -67,9 +68,7 @@ export default class Recurring {
         contextAsEnd
       )
     } else { // INPUT IS OBJECT
-      if (typeof input !== 'object' || input == null) return
       const duration = Duration.parse(input.duration)
-      if (duration == null) return
       return new Recurring(
         input.times,
         input.start,
@@ -267,6 +266,6 @@ export default class Recurring {
   #validateQuery (date: Dayjs, query: Query | undefined): boolean {
     if (query == null) return true
     if (query instanceof Function) return query(date)
-    return Object.entries(query).every(([k, v]) => (date[k as keyof Dayjs] as any)(v))
+    return Object.entries(query).every(([k, v]) => (date[k as keyof Dayjs])(v))
   }
 }

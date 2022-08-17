@@ -8,7 +8,9 @@ const plugin: PluginFunc<{ order: 'relative' | 'chronological' }> = (option, day
 
   const oldParse = dayjsClass.prototype.parse
   dayjsClass.prototype.parse = function (cfg: Record<string, any>) {
-    this.$recurring = typeof cfg.date === 'string' ? Recurring.parse(cfg.date, { context: this }) : undefined
+    try {
+      this.$recurring = typeof cfg.date === 'string' ? Recurring.parse(cfg.date, { context: this }) : undefined
+    } catch {}
     if (this.$recurring != null) cfg.date = this.$recurring.start ?? this.$recurring.end
     return oldParse.bind(this)(cfg)
   }
@@ -39,10 +41,9 @@ const plugin: PluginFunc<{ order: 'relative' | 'chronological' }> = (option, day
     } else { // (recurring): Dayjs
       const clone = this.clone()
       clone.$recurring = Recurring.parse(input, { context: this, contextAsEnd: contextAsEnd ?? false })
-      if (clone.$recurring == null) return
       return clone
     }
-  } as { (this: Dayjs): Recurring | undefined, (this: Dayjs, input?: Parameters<(typeof Recurring)['parse']>[0], opts?: { contextAsEnd?: boolean }): Dayjs | undefined }
+  } as { (this: Dayjs): Recurring | undefined, (this: Dayjs, input?: Parameters<(typeof Recurring)['parse']>[0], opts?: { contextAsEnd?: boolean }): Dayjs }
 }
 
 export default plugin

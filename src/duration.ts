@@ -1,4 +1,5 @@
 import type { Dayjs } from 'dayjs'
+import { DayjsPluginRecurringError } from './errors'
 
 const ORDERED_DATE_UNITS = ['years', 'months', 'weeks', 'days'] as const
 const ORDERED_TIME_UNITS = ['hours', 'minutes', 'seconds'] as const
@@ -22,20 +23,21 @@ export default class Duration {
     readonly seconds: number = 0
   ) {}
 
-  static parse (input: string | ParseOpts): Duration | undefined {
+  static parse (input: string | ParseOpts): Duration {
     if (input instanceof Duration) return input
+    if ((typeof input !== 'string' && typeof input !== 'object') || input == null) throw new DayjsPluginRecurringError('duration_invalid')
     let obj: ParseOpts = {}
     if (typeof input === 'string') {
       const match = input.match(REGEX_SE)
-      if (match?.groups == null) return
+      if (match?.groups == null) throw new DayjsPluginRecurringError('duration_invalid')
       obj = Object.fromEntries(Object.entries(match.groups).map(([k, v]) => [k, v ? +v : 0])) as ParseOpts // eslint-disable-line @typescript-eslint/strict-boolean-expressions
     } else {
       obj = input
     }
-    if (typeof obj !== 'object' || obj == null) return
     const args = ORDERED_UNITS.map(x => obj[x] ?? 0)
-    if (args.every(x => x === 0)) return
-    if (args.some(x => x < 0 || x % 1 !== 0)) return
+    if (args.every(x => x === 0)) throw new DayjsPluginRecurringError('duration_zero')
+    if (args.some(x => x < 0)) throw new DayjsPluginRecurringError('duration_negative')
+    if (args.some(x => x % 1 !== 0)) throw new DayjsPluginRecurringError('duration_float')
     return new Duration(...args)
   }
 

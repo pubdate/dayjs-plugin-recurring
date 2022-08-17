@@ -18,35 +18,35 @@ describe('Duration', () => {
         expect(Duration.parse('PT5H6M7S')).toEqual({ years: 0, months: 0, weeks: 0, days: 0, hours: 5, minutes: 6, seconds: 7 })
       })
 
-      test('it returns undefined when the value is invalid', () => {
-        expect(Duration.parse('abc')).toEqual(undefined)
-        expect(Duration.parse('abc P1Y')).toEqual(undefined)
-        expect(Duration.parse('P1Y abc')).toEqual(undefined)
-        expect(Duration.parse('P1YM')).toEqual(undefined)
-        // TODO: expect(Duration.parse('P1YT')).toEqual(undefined)
-        expect(Duration.parse('PT')).toEqual(undefined)
-        expect(Duration.parse('P')).toEqual(undefined)
+      test('it throws an error when the value is invalid', () => {
+        expect(() => Duration.parse('abc')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('abc P1Y')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P1Y abc')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P1YM')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        // TODO: expect(() => Duration.parse('P1YT')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('PT')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero')
+        expect(() => Duration.parse('P')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero')
         // P
-        expect(Duration.parse('1Y')).toEqual(undefined)
-        expect(Duration.parse('T1H')).toEqual(undefined)
+        expect(() => Duration.parse('1Y')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('T1H')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
         // T
-        expect(Duration.parse('PT1Y')).toEqual(undefined)
+        expect(() => Duration.parse('PT1Y')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
         expect(Duration.parse('PT2M')).toEqual({ years: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 2, seconds: 0 })
-        expect(Duration.parse('PT3W')).toEqual(undefined)
-        expect(Duration.parse('PT4D')).toEqual(undefined)
-        expect(Duration.parse('P5H')).toEqual(undefined)
+        expect(() => Duration.parse('PT3W')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('PT4D')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P5H')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
         expect(Duration.parse('P6M')).toEqual({ years: 0, months: 6, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 })
-        expect(Duration.parse('P7S')).toEqual(undefined)
-        expect(Duration.parse('P1Y2M3W4D5H6M7S')).toEqual(undefined)
-        expect(Duration.parse('PT1Y2M3W4D')).toEqual(undefined)
-        expect(Duration.parse('P5H6M7S')).toEqual(undefined)
+        expect(() => Duration.parse('P7S')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P1Y2M3W4D5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('PT1Y2M3W4D')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
         // ORDER
         expect(Duration.parse('P1Y2M')).toEqual({ years: 1, months: 2, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 })
-        expect(Duration.parse('P1M2Y')).toEqual(undefined)
+        expect(() => Duration.parse('P1M2Y')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
         // UNSUPPORTED/NON-STANDARD
-        expect(Duration.parse('-P1Y2M3W4DT5H6M7S')).toEqual(undefined)
-        expect(Duration.parse('P-1Y2M3W4DT5H6M7S')).toEqual(undefined)
-        expect(Duration.parse('P1Y2M3W4DT5H6M7.123S')).toEqual(undefined)
+        expect(() => Duration.parse('-P1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P-1Y2M3W4DT5H6M7S')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+        expect(() => Duration.parse('P1Y2M3W4DT5H6M7.123S')).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
       })
     })
 
@@ -75,22 +75,24 @@ describe('Duration', () => {
         expect(Duration.parse(duration)).toBe(duration)
       })
 
-      test('it returns undefined when the value is invalid', () => {
-        expect(Duration.parse({})).toEqual(undefined)
-        expect(Duration.parse({ years: 0 })).toEqual(undefined)
-        expect(Duration.parse({ years: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 })).toEqual(undefined)
+      test('it throws an error when the value is invalid', () => {
+        expect(() => Duration.parse({})).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero')
+        expect(() => Duration.parse({ years: 0 })).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero')
+        expect(() => Duration.parse({ years: 0, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 })).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero')
 
-        expect(Duration.parse({ years: -1 })).toEqual(undefined)
+        expect(() => Duration.parse({ years: -1 })).toThrow('[@pubdate/dayjs-plugin-recurring] duration_negative')
 
-        expect(Duration.parse({ abc: 1 } as any)).toEqual(undefined)
+        expect(() => Duration.parse({ abc: 1 } as any)).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero')
         expect(Duration.parse({ abc: 1, years: 1 } as any)).toEqual({ years: 1, months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 })
+
+        expect(() => Duration.parse({ years: 0.1 })).toThrow('[@pubdate/dayjs-plugin-recurring] duration_float')
       })
     })
 
-    test('it returns undefined when the value is neither a string nor an object', () => {
-      expect(Duration.parse(1 as any)).toEqual(undefined)
-      expect(Duration.parse(null as any)).toEqual(undefined)
-      expect(Duration.parse(new Date() as any)).toEqual(undefined)
+    test('it throws an error when the value is neither a string nor an object', () => {
+      expect(() => Duration.parse(1 as any)).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+      expect(() => Duration.parse(null as any)).toThrow('[@pubdate/dayjs-plugin-recurring] duration_invalid')
+      expect(() => Duration.parse(new Date() as any)).toThrow('[@pubdate/dayjs-plugin-recurring] duration_zero') // TODO: duration_invalid
     })
   })
 
