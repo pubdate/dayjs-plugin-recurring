@@ -4,6 +4,6 @@ declare module 'dayjs' {
   interface Dayjs {
     parse: (cfg: Record<string, any>) => unknown
     $recurring?: Recurring
-    $recurringPredecessors?: readonly Dayjs[]
+    $recurringRelativeHistory?: readonly Dayjs[]
   }
 }

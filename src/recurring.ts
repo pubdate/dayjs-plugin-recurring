@@ -17,6 +17,7 @@ export type Query = {
   [K in keyof Dayjs as Dayjs[K] extends (date: Dayjs) => boolean ? K : never]?:
   Dayjs[K] extends (date: Dayjs) => boolean ? Parameters<Dayjs[K]> | Parameters<Dayjs[K]>[0] : never
 } | ((date: Dayjs) => boolean)
+
 export default class Recurring {
   static dayjsFactory: typeof dayjs | undefined
 
@@ -38,12 +39,12 @@ export default class Recurring {
     this.#end = this.end != null || (this.start == null && contextAsEnd)
       ? this.end ?? context ?? Recurring.dayjsFactory!()
       : undefined
-    // GENERATE times IF GUESSABLE; AND REMOVE end/#end WHEN BOTH #start AND #end ARE PROVIDED
+    // GENERATE times AND REMOVE end/#end WHEN BOTH #start AND #end ARE PROVIDED
     if (this.#start != null && this.#end != null) {
       if (this.times == null) {
         const recurring = Recurring.parse({ start: this.#start, duration: this.duration })!
-        this.#all = recurring.first(Infinity, (date: Dayjs): boolean => !date.isAfter(this.#end))
-        this.times = this.#all.length - 1
+        this.#relativeAll = recurring.relativeFirst(Infinity, (date: Dayjs): boolean => !date.isAfter(this.#end))
+        this.times = this.#relativeAll.length - 1
       }
       this.end = undefined
       this.#end = undefined
@@ -80,178 +81,154 @@ export default class Recurring {
     }
   }
 
-  #all: readonly Dayjs[] | null | undefined
-  all (): readonly Dayjs[] | null {
-    if (this.times == null) return null // NO LIMITS
-    if (this.#all === undefined) {
-      const arr = [
-        this.#firstOccurrenceInDirDirection,
-        ...this.#getSuccessors(this.#firstOccurrenceInDirDirection, Infinity)
-      ]
-      if (this.dir === 'desc') arr.reverse()
-      this.#all = arr
+  // ALL
+
+  #relativeAll: readonly Dayjs[] | null | undefined
+  relativeAll (): readonly Dayjs[] | null {
+    if (this.times == null) return null // NO LIMIT
+    if (this.#relativeAll === undefined) {
+      this.#relativeAll = [this.relativeFirst(), ...this.relativeNext(this.relativeFirst(), Infinity)]
     }
-    return this.#all
+    return this.#relativeAll
   }
 
-  #first: Dayjs | null | undefined
-  first (): Dayjs | null
-  first (n: number, query?: Query): readonly Dayjs[]
-  first (n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+  chronologicalAll (): readonly Dayjs[] | null {
+    if (this.relativeAll() == null) return null
+    if (this.dir === 'asc') return this.relativeAll()
+    return [...this.relativeAll()!].reverse()
+  }
+
+  // FIRST
+
+  #relativeFirst: Dayjs | undefined
+  relativeFirst (): Dayjs
+  relativeFirst (n: number, query?: Query): readonly Dayjs[]
+  relativeFirst (n?: number, query?: Query): Dayjs | readonly Dayjs[] {
     if (n == null) { // () => Dayjs
-      if (this.#first === undefined) {
-        this.#first = this.dir === 'asc'
-          ? this.#setRecurring(Recurring.dayjsFactory!(this.#start), { predecessors: [] })
-          : this.all()?.[0] ?? null
+      if (this.#relativeFirst === undefined) {
+        this.#relativeFirst = this.#setRecurring(Recurring.dayjsFactory!(this.#start ?? this.#end), { $recurringRelativeHistory: [] })
       }
-      return this.#first
+      return this.#relativeFirst
     } else { // (n) => Dayjs[]
       if (n === 0) return []
-      if (this.first() == null) return null
-      if (!this.#validateQuery(this.first()!, query)) return []
-      return [this.first()!, ...this.next(this.first()!, n - 1, query)]
+      if (!this.#validateQuery(this.relativeFirst()!, query)) return []
+      return [this.relativeFirst()!, ...this.relativeNext(this.relativeFirst()!, n - 1, query)]
     }
   }
 
-  #last: Dayjs | null | undefined
-  last (): Dayjs | null
-  last (n: number, query?: Query): readonly Dayjs[] | null
-  last (n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+  chronologicalFirst (): Dayjs
+  chronologicalFirst (n: number, query?: Query): readonly Dayjs[]
+  chronologicalFirst (n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+    if (n == null) return this.dir === 'asc' ? this.relativeFirst() : this.relativeLast()
+    return this.dir === 'asc' ? this.relativeFirst(n, query) : this.relativeLast(n, query)
+  }
+
+  // LAST
+
+  #relativeLast: Dayjs | null | undefined
+  relativeLast (): Dayjs | null
+  relativeLast (n: number, query?: Query): readonly Dayjs[] | null
+  relativeLast (n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
     if (n == null) { // () => Dayjs
-      if (this.#last === undefined) {
-        this.#last = this.dir === 'desc'
-          ? this.#setRecurring(Recurring.dayjsFactory!(this.#end), { predecessors: [] })
-          : this.all()?.[this.all()!.length - 1] ?? null
+      if (this.#relativeLast === undefined) {
+        this.#relativeLast = this.relativeAll()?.[this.relativeAll()!.length - 1] ?? null
       }
-      return this.#last
+      return this.#relativeLast
     } else { // (n) => Dayjs[]
       if (n === 0) return []
-      if (this.last() == null) return null
-      if (!this.#validateQuery(this.last()!, query)) return []
-      return [...this.prev(this.last()!, n - 1, query), this.last()!]
+      let arr = this.relativeAll()
+      if (arr == null) return null
+      arr = [...arr].reverse()
+      const result = []
+      for (let i = 0; i < n; i++) {
+        if (!this.#validateQuery(arr[i], query)) break
+        if (arr[i] == null) break
+        result.push(arr[i])
+      }
+      return result
     }
   }
 
-  /**
-   * @returns The occurrence or the `n` occurrences before `date` in the chronological direction ordered from the oldest to the newest.
-   *
-   * @example
-   * Recurring.parse('R/2020-01-01/P1Y').prev(dayjs('2025-01-01')) // 2024-01-01
-   * Recurring.parse('R/P1Y/2030-01-01').prev(dayjs('2025-01-01')) // 2024-01-01
-   *
-   * Recurring.parse('R/2020-01-01/P1Y').prev(dayjs('2025-01-01'), 2) // [2023-01-01, 2024-01-01]
-   * Recurring.parse('R/P1Y/2030-01-01').prev(dayjs('2025-01-01'), 2) // [2023-01-01, 2024-01-01]
-   */
-  prev (date: Dayjs): Dayjs | null
-  prev (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
-  prev (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
-    if (n == null) return this.prev(date, 1)[0] ?? null
-    return [...(this.dir === 'asc' ? this.#getPredecessors(date, n, query) : this.#getSuccessors(date, n, query))].reverse()
+  chronologicalLast (): Dayjs
+  chronologicalLast (n: number, query?: Query): readonly Dayjs[]
+  chronologicalLast (n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+    if (n == null) return this.dir === 'asc' ? this.relativeLast() : this.relativeFirst()
+    const arr = this.dir === 'asc' ? this.relativeLast(n, query) : this.relativeFirst(n, query)
+    if (arr == null) return null
+    return [...arr].reverse()
   }
 
-  /**
-   * @returns The occurrence or the `n` occurrences after `date` in the chronological direction ordered from the oldest to the newest.
-   *
-   * @example
-   * Recurring.parse('R/2020-01-01/P1Y').next(dayjs('2025-01-01')) // 2026-01-01
-   * Recurring.parse('R/P1Y/2030-01-01').next(dayjs('2025-01-01')) // 2026-01-01
-   *
-   * Recurring.parse('R/2020-01-01/P1Y').next(dayjs('2025-01-01'), 2) // [2026-01-01, 2027-01-01]
-   * Recurring.parse('R/P1Y/2030-01-01').next(dayjs('2025-01-01'), 2) // [2026-01-01, 2027-01-01]
-   */
-  next (date: Dayjs): Dayjs | null
-  next (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
-  next (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
-    if (n == null) return this.next(date, 1)[0] ?? null
-    return this.dir === 'asc' ? this.#getSuccessors(date, n, query) : this.#getPredecessors(date, n, query)
-  }
+  // PREV
 
-  /**
-   * @returns The `n` occurrences succeeding `date` in the `dir` direction ordered from the closest to the furthest.
-   *
-   * @example
-   * Recurring.parse('R/2020-01-01/P1Y').#getSuccessors(dayjs('2025-01-01'), 2) // [2026-01-01, 2027-01-01]
-   * Recurring.parse('R/P1Y/2030-01-01').#getSuccessors(dayjs('2025-01-01'), 2) // [2024-01-01, 2023-01-01]
-   */
-  #getSuccessors (date: Dayjs, n: number, query?: Query): readonly Dayjs[] {
-    this.#setPredecessors(date)
-    let succ = date.$recurringPredecessors!.length === 0
-      ? this.#firstOccurrenceInDirDirection
-      : this.#getSuccessor(date.$recurringPredecessors![0])
-    if (succ == null) return []
-    if (succ.isSame(date)) succ = this.#getSuccessor(succ)
-    const result: Dayjs[] = []
-    for (let i = 0; i < n; i++) {
-      if (succ == null) break
-      if (!this.#validateQuery(succ, query)) break
-      result.push(succ)
-      succ = this.#getSuccessor(succ)
-    }
-    return result
-  }
-
-  /**
-   * @returns The occurrence succeeding `date` in the `dir` direction.
-   *
-   * @example
-   * Recurring.parse('R/2020-01-01/P1Y').#getSuccessor(dayjs('2025-01-01')) // 2026-01-01
-   * Recurring.parse('R/P1Y/2030-01-01').#getSuccessor(dayjs('2025-01-01')) // 2024-01-01
-   */
-  #getSuccessor (date: Dayjs): Dayjs | undefined {
-    this.#setPredecessors(date)
-    if (this.times != null && date.$recurringPredecessors!.length >= this.times) return
-    return this.#setRecurring(
-      this.duration._addToDate(date, this.dir === 'asc' ? 1 : -1),
-      { predecessors: [date, ...date.$recurringPredecessors!] }
-    )
-  }
-
-  /**
-   * @returns The `n` occurrences predecessing `date` in the `dir` direction ordered from the closest to the furthest.
-   *
-   * @example
-   * Recurring.parse('R/2020-01-01/P1Y').#getPredecessors(dayjs('2025-01-01'), 2) // [2024-01-01, 2023-01-01]
-   * Recurring.parse('R/P1Y/2030-01-01').#getPredecessors(dayjs('2025-01-01'), 2) // [2026-01-01, 2027-01-01]
-   */
-  #getPredecessors (date: Dayjs, n: number, query?: Query): readonly Dayjs[] {
-    this.#setPredecessors(date)
-    const arr = [...date.$recurringPredecessors!]
-    const result: Dayjs[] = []
-    for (let i = 0; i < n; i++) {
-      if (!this.#validateQuery(arr[i], query)) break
-      if (arr[i] == null) break
-      result.push(arr[i])
-    }
-    return result
-  }
-
-  #setPredecessors (date: Dayjs): void {
-    if (date.$recurringPredecessors != null) return
-    if (!this.#firstOccurrenceInDirDirection[this.dir === 'asc' ? 'isBefore' : 'isAfter'](date)) {
-      date.$recurringPredecessors = [] // date is before firstOccurrenceInDirDirection in the dir direction
-    } else {
-      date.$recurringPredecessors = [
-        this.#firstOccurrenceInDirDirection,
-        ...this.#getSuccessors(this.#firstOccurrenceInDirDirection, Infinity, { [this.dir === 'asc' ? 'isBefore' : 'isAfter']: date })
-      ].reverse()
+  relativePrev (date: Dayjs): Dayjs | null
+  relativePrev (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
+  relativePrev (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+    if (n == null) { // () => Dayjs
+      return this.relativePrev(date, 1)[0] ?? null
+    } else { // (n) => Dayjs[]
+      const arr = [...this.#relativeHistory(date)].reverse()
+      const result: Dayjs[] = []
+      for (let i = 0; i < n; i++) {
+        if (!this.#validateQuery(arr[i], query)) break
+        if (arr[i] == null) break
+        result.push(arr[i])
+      }
+      return result
     }
   }
 
-  #setRecurring (date: Dayjs, { predecessors }: { predecessors: Dayjs[] }): Dayjs {
-    date.$recurring = this
-    date.$recurringPredecessors = predecessors
-    return date
+  chronologicalPrev (date: Dayjs): Dayjs
+  chronologicalPrev (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
+  chronologicalPrev (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+    if (n == null) return this.dir === 'asc' ? this.relativePrev(date) : this.relativeNext(date)
+    const arr = this.dir === 'asc' ? this.relativePrev(date, n, query) : this.relativeNext(date, n, query)
+    if (arr == null) return null
+    return [...arr].reverse()
   }
 
-  #validateQuery (date: Dayjs, query: Query | undefined): boolean {
-    if (query == null) return true
-    if (query instanceof Function) return query(date)
-    return Object.entries(query).every(([k, v]) => (date[k as keyof Dayjs] as any)(v))
+  // NEXT
+
+  relativeNext (date: Dayjs): Dayjs | null
+  relativeNext (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
+  relativeNext (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+    if (n == null) { // () => Dayjs
+      if (this.times != null && this.#relativeHistory(date).length >= this.times) return null
+      if (this.relativeFirst()[this.dir === 'asc' ? 'isAfter' : 'isBefore'](date)) return this.relativeFirst()
+      if (this.#relativeHistory(date).length !== 0) {
+        date = this.#setRecurring(
+          this.duration._addToDate(this.#relativeHistory(date)[this.#relativeHistory(date).length - 1], this.dir === 'asc' ? 1 : -1),
+          { $recurringRelativeHistory: this.#relativeHistory(date) }
+        )
+      }
+      return this.#setRecurring(
+        this.duration._addToDate(date, this.dir === 'asc' ? 1 : -1),
+        { $recurringRelativeHistory: [...this.#relativeHistory(date), date] }
+      )
+    } else { // (n) => Dayjs[]
+      let succ = this.#relativeHistory(date).length === 0
+        ? this.relativeFirst()
+        : this.relativeNext(this.#relativeHistory(date)[this.#relativeHistory(date).length - 1])
+      if (succ == null) return []
+      if (succ.isSame(date)) succ = this.relativeNext(succ)
+      const result: Dayjs[] = []
+      for (let i = 0; i < n; i++) {
+        if (succ == null) break
+        if (!this.#validateQuery(succ, query)) break
+        result.push(succ)
+        succ = this.relativeNext(succ)
+      }
+      return result
+    }
   }
 
-  get #firstOccurrenceInDirDirection (): Dayjs {
-    return this.dir === 'asc' ? this.first()! : this.last()!
+  chronologicalNext (date: Dayjs): Dayjs
+  chronologicalNext (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
+  chronologicalNext (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
+    if (n == null) return this.dir === 'asc' ? this.relativeNext(date) : this.relativePrev(date)
+    return this.dir === 'asc' ? this.relativeNext(date, n, query) : this.relativePrev(date, n, query)
   }
+
+  // OTHER
 
   get dir (): 'asc' | 'desc' {
     return this.#start != null ? 'asc' : 'desc'
@@ -264,5 +241,32 @@ export default class Recurring {
     if (body == null && (includeContext ?? false) && this.#start != null) body = `${Recurring.dayjsFactory!(this.#start).format(dateFormat)}/${this.duration.toString()}`
     if (body == null && (includeContext ?? false) && this.#end != null) body = `${this.duration.toString()}/${Recurring.dayjsFactory!(this.#end).format(dateFormat)}`
     return `R${this.times ?? ''}/${body ?? this.duration.toString()}`
+  }
+
+  // PRIVATE
+
+  #relativeHistory (date: Dayjs): readonly Dayjs[] {
+    if (date.$recurringRelativeHistory != null) return date.$recurringRelativeHistory
+    if (!this.relativeFirst()[this.dir === 'asc' ? 'isBefore' : 'isAfter'](date)) {
+      date.$recurringRelativeHistory = [] // date is before firstOccurrenceInDirDirection in the dir direction
+    } else {
+      date.$recurringRelativeHistory = [
+        this.relativeFirst(),
+        ...this.relativeNext(this.relativeFirst(), Infinity, { [this.dir === 'asc' ? 'isBefore' : 'isAfter']: date })
+      ]
+    }
+    return date.$recurringRelativeHistory
+  }
+
+  #setRecurring (date: Dayjs, { $recurringRelativeHistory }: { $recurringRelativeHistory: readonly Dayjs[] }): Dayjs {
+    date.$recurring = this
+    date.$recurringRelativeHistory = $recurringRelativeHistory
+    return date
+  }
+
+  #validateQuery (date: Dayjs, query: Query | undefined): boolean {
+    if (query == null) return true
+    if (query instanceof Function) return query(date)
+    return Object.entries(query).every(([k, v]) => (date[k as keyof Dayjs] as any)(v))
   }
 }
