@@ -12,6 +12,10 @@ describe('Recurring', () => {
         expect(Recurring.parse('R/2020-01-01/P1Y2M3W4DT5H6M7S')).toEqual({ start: '2020-01-01', duration })
         expect(Recurring.parse('R/P1Y2M3W4DT5H6M7S/2020-01-01')).toEqual({ end: '2020-01-01', duration })
         expect(Recurring.parse('R/P1Y2M3W4DT5H6M7S')).toEqual({ duration })
+
+        expect(Recurring.parse('R-1/2020-01-01/P1Y2M3W4DT5H6M7S')).toEqual({ start: '2020-01-01', duration })
+        expect(Recurring.parse('R-1/P1Y2M3W4DT5H6M7S/2020-01-01')).toEqual({ end: '2020-01-01', duration })
+        expect(Recurring.parse('R-1/P1Y2M3W4DT5H6M7S')).toEqual({ duration })
       })
 
       test('it throws an error when the value is invalid', () => {
