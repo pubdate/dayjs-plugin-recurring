@@ -194,6 +194,7 @@ declare module 'dayjs' {
      * @throws duration_zero
      * @throws duration_float
      * @throws recurring_invalid
+     * @throws recurring_start_after_end
      *
      * @returns A new dayjs instance with the provided recurring.
      * If the recurring has no start and no end, the dayjs instance will be used as start (or as end if `contextAsEnd` option is set to true).
