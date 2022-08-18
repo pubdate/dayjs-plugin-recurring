@@ -6,7 +6,7 @@ import { DayjsPluginRecurringError } from './errors'
 
 const REGEX_DURATION = /P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?/
 const REGEX_DATE = /.+/
-const REGEX_SE = new RegExp(`^R(?<times>[0-9]*)/(?:(?<start>${REGEX_DATE.source})/(?<duration_a>${REGEX_DURATION.source})|(?<duration_b>${REGEX_DURATION.source})(?:/(?<end>${REGEX_DATE.source}))?)$`)
+const REGEX_SE = new RegExp(`^R(?:(?<times>[0-9]*)|-1)/(?:(?<start>${REGEX_DATE.source})/(?<duration_a>${REGEX_DURATION.source})|(?<duration_b>${REGEX_DURATION.source})(?:/(?<end>${REGEX_DATE.source}))?)$`)
 
 interface ParseOpts {
   times?: number
