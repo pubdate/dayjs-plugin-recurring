@@ -51,6 +51,12 @@ describe('Recurring', () => {
         expect(Recurring.parse({ start: '2020-01-01', end: '2026-03-07T01:30:34', duration })).toEqual({ times: 4, start: '2020-01-01', duration })
         expect(Recurring.parse({ start: '2020-01-01', end: '2026-03-07T01:30:35', duration })).toEqual({ times: 5, start: '2020-01-01', duration })
         expect(Recurring.parse({ start: '2020-01-01', end: '2026-03-07T01:30:36', duration })).toEqual({ times: 5, start: '2020-01-01', duration })
+        expect(Recurring.parse({ start: '2020-01-01', end: '2020-01-01', duration })).toEqual({ times: 0, start: '2020-01-01', duration })
+      })
+
+      test('it throws an error when start and end are provided, times is missing but start is after end', () => {
+        expect(Recurring.parse({ times: 999, start: '2020-01-01', end: '2000-01-01', duration })).toEqual({ times: 999, start: '2020-01-01', duration })
+        expect(() => Recurring.parse({ start: '2020-01-01', end: '2000-01-01', duration })).toThrow('[@pubdate/dayjs-plugin-recurring] recurring_start_after_end')
       })
     })
 

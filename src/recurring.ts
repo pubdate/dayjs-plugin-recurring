@@ -43,6 +43,7 @@ export default class Recurring {
     // GENERATE times AND REMOVE end/#end WHEN BOTH #start AND #end ARE PROVIDED
     if (this.#start != null && this.#end != null) {
       if (this.times == null) {
+        if (Recurring.dayjsFactory!(this.#start).isAfter(this.#end)) throw new DayjsPluginRecurringError('recurring_start_after_end')
         const recurring = Recurring.parse({ start: this.#start, duration: this.duration })!
         this.#relativeAll = recurring.relativeFirst(Infinity, (date: Dayjs): boolean => !date.isAfter(this.#end))
         this.times = this.#relativeAll.length - 1
