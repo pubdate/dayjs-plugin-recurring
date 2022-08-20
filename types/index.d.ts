@@ -10,7 +10,9 @@ export = plugin
 declare module 'dayjs' {
   interface Dayjs {
     /**
-     * @returns All occurrences. Or `null` when there is no limit.
+     * @returns
+     * - All occurrences.
+     * - Or `null` when there is no limit.
      *
      * @example
      * // chronological
@@ -96,7 +98,8 @@ declare module 'dayjs' {
     last(n: number, query?: Query): readonly Dayjs[] | null
     /**
      * @returns
-     * - Previous occurrence. Or `null` when the the current occurrence is the first one.
+     * - Previous occurrence.
+     * - Or `null` when the current occurrence is the first one.
      *
      * @example
      * // chronological
@@ -139,7 +142,8 @@ declare module 'dayjs' {
     prev(n: number, query?: Query): readonly Dayjs[]
     /**
      * @returns
-     * - Next occurrence. Or `null` when the the current occurrence is the last one.
+     * - Next occurrence.
+     * - Or `null` when the current occurrence is the last one.
      *
      * @example
      * // chronological
@@ -196,8 +200,7 @@ declare module 'dayjs' {
      * @throws recurring_invalid
      * @throws recurring_start_after_end
      *
-     * @returns A new dayjs instance with the provided recurring.
-     * If the recurring has no start and no end, the dayjs instance will be used as start (or as end if `contextAsEnd` option is set to true).
+     * @returns A new dayjs instance with the provided recurring. If the recurring has no start and no end, the dayjs instance will be used as start (or as end if `contextAsEnd` option is set to true).
      *
      * @example
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y') // 2025-01-01
