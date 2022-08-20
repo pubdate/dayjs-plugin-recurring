@@ -55,7 +55,7 @@ declare module 'dayjs' {
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first(3) // null
      * dayjs('2025-01-01').recurring('R10/P1Y/2030-01-01').first(3) // [2020-01-01, 2021-01-01, 2022-01-01]
      */
-    first(n: number, query?: PQuery): readonly Dayjs[] | null
+    first(n: number, query?: Query): readonly Dayjs[] | null
     /**
      * @returns
      * - Last occurrence.
@@ -155,7 +155,7 @@ declare module 'dayjs' {
      *
      * dayjs('2030-01-01').recurring('R10/2020-01-01/P1Y').next() // null
      * dayjs('2030-01-01').recurring('R/P1Y/2030-01-01').next() // null
-     */x
+     */
     next(): Dayjs | null
     /**
      * @returns Next `n` occurrences.

@@ -267,6 +267,6 @@ export default class Recurring {
   #validateQuery (date: Dayjs, query: Query | undefined): boolean {
     if (query == null) return true
     if (query instanceof Function) return query(date)
-    return Object.entries(query).every(([k, v]) => (date[k as keyof Dayjs])(v))
+    return Object.entries(query).every(([k, v]) => (date[k as keyof Dayjs] as any)(v))
   }
 }
