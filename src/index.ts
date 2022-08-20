@@ -3,8 +3,9 @@ import type { Query } from './recurring'
 
 import Recurring from './recurring'
 
-const plugin: PluginFunc<{ order: 'relative' | 'chronological' }> = (option, dayjsClass, dayjsFactory) => {
+const plugin: PluginFunc<{ order?: 'relative' | 'chronological' } | undefined> = (option, dayjsClass, dayjsFactory) => {
   Recurring.dayjsFactory = dayjsFactory
+  const order = option?.order ?? 'chronological'
 
   const oldParse = dayjsClass.prototype.parse
   dayjsClass.prototype.parse = function (cfg: Record<string, any>) {
@@ -16,23 +17,23 @@ const plugin: PluginFunc<{ order: 'relative' | 'chronological' }> = (option, day
   }
 
   dayjsClass.prototype.all = function () {
-    return this.$recurring![`${option.order}All`]()
+    return this.$recurring![`${order}All`]()
   }
 
   dayjsClass.prototype.first = function (n, query) {
-    return this.$recurring![`${option.order}First`](n, query)
+    return this.$recurring![`${order}First`](n, query)
   } as { (this: Dayjs): Dayjs | null, (this: Dayjs, n: number, query?: Query): readonly Dayjs[] | null }
 
   dayjsClass.prototype.last = function (n, query) {
-    return this.$recurring![`${option.order}Last`](n, query)
+    return this.$recurring![`${order}Last`](n, query)
   } as { (this: Dayjs): Dayjs | null, (this: Dayjs, n: number, query?: Query): readonly Dayjs[] | null }
 
   dayjsClass.prototype.prev = function (n, query) {
-    return this.$recurring![`${option.order}Prev`](this, n, query)
+    return this.$recurring![`${order}Prev`](this, n, query)
   } as { (this: Dayjs): Dayjs | null, (this: Dayjs, n: number, query?: Query): readonly Dayjs[] }
 
   dayjsClass.prototype.next = function (n, query) {
-    return this.$recurring![`${option.order}Next`](this, n, query)
+    return this.$recurring![`${order}Next`](this, n, query)
   } as { (this: Dayjs): Dayjs | null, (this: Dayjs, n: number, query?: Query): readonly Dayjs[] }
 
   dayjsClass.prototype.recurring = function (input, { contextAsEnd }: { contextAsEnd?: boolean } = {}) {

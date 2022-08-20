@@ -13,14 +13,14 @@ declare module 'dayjs' {
      * @returns All occurrences. Or `null` when there is no limit.
      *
      * @example
-     * // relative
-     * dayjs('R3/2020-01-01/P1Y').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01-01]
-     * dayjs('R3/P1Y/2030-01-01').all() // [2030-01-01, 2029-01-01, 2028-01-01, 2027-01-01]
-     * dayjs('R/2020-01-01/P1Y').all() // null
-     *
      * // chronological
      * dayjs('R3/2020-01-01/P1Y').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01-01]
      * dayjs('R3/P1Y/2030-01-01').all() // [2027-01-01, 2028-01-01, 2029-01-01, 2030-01-01]
+     * dayjs('R/2020-01-01/P1Y').all() // null
+     *
+     * // relative
+     * dayjs('R3/2020-01-01/P1Y').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01-01]
+     * dayjs('R3/P1Y/2030-01-01').all() // [2030-01-01, 2029-01-01, 2028-01-01, 2027-01-01]
      * dayjs('R/2020-01-01/P1Y').all() // null
      */
     all: () => readonly Dayjs[] | null
@@ -30,14 +30,14 @@ declare module 'dayjs' {
      * - [chronological]: Or `null` when there is no `start` and no limit.
      *
      * @example
-     * // relative
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first() // 2020-01-01
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first() // 2030-01-01
-     *
      * // chronological
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first() // 2020-01-01
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first() // null
      * dayjs('2025-01-01').recurring('R10/P1Y/2030-01-01').first() // 2020-01-01
+     *
+     * // relative
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first() // 2020-01-01
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first() // 2030-01-01
      */
     first(): Dayjs | null
     /**
@@ -46,52 +46,52 @@ declare module 'dayjs' {
      * - [chronological]: Or `null` when there is no `start` and no limit.
      *
      * @example
-     * // relative
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first(3) // [2020-01-01, 2021-01-01, 2022-01-01]
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first(3) // [2030-01-01, 2029-01-01, 2028-01-01]
-     *
      * // chronological
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first(3) // [2020-01-01, 2021-01-01, 2022-01-01]
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first(3) // null
      * dayjs('2025-01-01').recurring('R10/P1Y/2030-01-01').first(3) // [2020-01-01, 2021-01-01, 2022-01-01]
+     *
+     * // relative
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').first(3) // [2020-01-01, 2021-01-01, 2022-01-01]
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').first(3) // [2030-01-01, 2029-01-01, 2028-01-01]
      */
     first(n: number, query?: Query): readonly Dayjs[] | null
     /**
      * @returns
      * - Last occurrence.
-     * - [relative]: Or `null` when there is no limit.
      * - [chronological]: Or `null` when there is no `end` and no limit.
+     * - [relative]: Or `null` when there is no limit.
      *
      * @example
+     * // chronological
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last() // null
+     * dayjs('2025-01-01').recurring('R10/2020-01-01/P1Y').last() // 2030-01-01
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last() // 2030-01-01
+     *
      * // relative
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last() // null
      * dayjs('2025-01-01').recurring('R10/2020-01-01/P1Y').last() // 2030-01-01
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last() // null
      * dayjs('2025-01-01').recurring('R10/P1Y/2030-01-01').last() // 2020-01-01
-     *
-     * // chronological
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last() // null
-     * dayjs('2025-01-01').recurring('R10/2020-01-01/P1Y').last() // 2030-01-01
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last() // 2030-01-01
      */
     last(): Dayjs | null
     /**
      * @returns
      * - Last `n` occurrences.
-     * - [relative]: Or null when there is no limit.
      * - [chronological]: Or `null` when there is no `end` and no limit.
+     * - [relative]: Or null when there is no limit.
      *
      * @example
+     * // chronological
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last(3) // null
+     * dayjs('2025-01-01').recurring('R10/2020-01-01/P1Y').last(3) // [2028-01-01, 2029-01-01, 2030-01-01]
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last(3) // [2028-01-01, 2029-01-01, 2030-01-01]
+     *
      * // relative
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last(3) // null
      * dayjs('2025-01-01').recurring('R10/2020-01-01/P1Y').last(3) // [2030-01-01, 2029-01-01, 2028-01-01]
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last(3) // null
      * dayjs('2025-01-01').recurring('R10/P1Y/2030-01-01').last(3) // [2020-01-01, 2021-01-01, 2022-01-01]
-     *
-     * // chronological
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').last(3) // null
-     * dayjs('2025-01-01').recurring('R10/2020-01-01/P1Y').last(3) // [2028-01-01, 2029-01-01, 2030-01-01]
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').last(3) // [2028-01-01, 2029-01-01, 2030-01-01]
      */
     last(n: number, query?: Query): readonly Dayjs[] | null
     /**
@@ -99,34 +99,25 @@ declare module 'dayjs' {
      * - Previous occurrence. Or `null` when the the current occurrence is the first one.
      *
      * @example
-     * // relative
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev() // 2024-01-01
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev() // 2026-01-01
-     *
-     * dayjs('2020-01-01').recurring('R/2020-01-01/P1Y').prev() // null
-     * dayjs('2030-01-01').recurring('R/P1Y/2030-01-01').prev() // null
-     *
      * // chronological
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev() // 2024-01-01
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev() // 2024-01-01
      *
      * dayjs('2020-01-01').recurring('R/2020-01-01/P1Y').prev() // null
      * dayjs('2020-01-01').recurring('R10/P1Y/2030-01-01').prev() // null
+     *
+     * // relative
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev() // 2024-01-01
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev() // 2026-01-01
+     *
+     * dayjs('2020-01-01').recurring('R/2020-01-01/P1Y').prev() // null
+     * dayjs('2030-01-01').recurring('R/P1Y/2030-01-01').prev() // null
      */
     prev(): Dayjs | null
     /**
      * @returns Previous `n` occurrences.
      *
      * @example
-     * // relative
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev(2) // [2024-01-01, 2023-01-01]
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev(2) // [2026-01-01, 2027-01-01]
-     *
-     * dayjs('2021-01-01').recurring('R/2020-01-01/P1Y').prev(2) // [2020-01-01]
-     * dayjs('2029-01-01').recurring('R/P1Y/2030-01-01').prev(2) // [2030-01-01]
-     *
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev(Infinity, { isAfter: '2021-01-01' }) // [2024-01-01, 2023-01-01, 2022-01-01]
-     *
      * // chronological
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev(2) // [2023-01-01, 2024-01-01]
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev(2) // [2023-01-01, 2024-01-01]
@@ -135,6 +126,15 @@ declare module 'dayjs' {
      * dayjs('2021-01-01').recurring('R10/P1Y/2030-01-01').prev(2) // [2020-01-01]
      *
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev(Infinity, { isAfter: '2021-01-01' }) // [2022-01-01, 2023-01-01, 2024-01-01]
+     *
+     * // relative
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev(2) // [2024-01-01, 2023-01-01]
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').prev(2) // [2026-01-01, 2027-01-01]
+     *
+     * dayjs('2021-01-01').recurring('R/2020-01-01/P1Y').prev(2) // [2020-01-01]
+     * dayjs('2029-01-01').recurring('R/P1Y/2030-01-01').prev(2) // [2030-01-01]
+     *
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').prev(Infinity, { isAfter: '2021-01-01' }) // [2024-01-01, 2023-01-01, 2022-01-01]
      */
     prev(n: number, query?: Query): readonly Dayjs[]
     /**
@@ -142,40 +142,40 @@ declare module 'dayjs' {
      * - Next occurrence. Or `null` when the the current occurrence is the last one.
      *
      * @example
-     * // relative
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next() // 2026-01-01
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').next() // 2024-01-01
-     *
-     * dayjs('2030-01-01').recurring('R10/2020-01-01/P1Y').next() // null
-     * dayjs('2020-01-01').recurring('R10/P1Y/2030-01-01').next() // null
-     *
      * // chronological
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next() // 2026-01-01
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').next() // 2026-01-01
      *
      * dayjs('2030-01-01').recurring('R10/2020-01-01/P1Y').next() // null
      * dayjs('2030-01-01').recurring('R/P1Y/2030-01-01').next() // null
+     *
+     * // relative
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next() // 2026-01-01
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').next() // 2024-01-01
+     *
+     * dayjs('2030-01-01').recurring('R10/2020-01-01/P1Y').next() // null
+     * dayjs('2020-01-01').recurring('R10/P1Y/2030-01-01').next() // null
      */
     next(): Dayjs | null
     /**
      * @returns Next `n` occurrences.
      *
      * @example
-     * // relative
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(2) // [2026-01-01, 2027-01-01]
-     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').next(2) // [2024-01-01, 2023-01-01]
-     *
-     * dayjs('2029-01-01').recurring('R10/2020-01-01/P1Y').next(2) // [2030-01-01-01]
-     * dayjs('2021-01-01').recurring('R10/P1Y/2030-01-01').next(2) // [2020-01-01-01]
-     *
-     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(Infinity, { isBefore: '2029-01-01' }) // [2026-01-01, 2027-01-01, 2028-01-01]
-     *
      * // chronological
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(2) // [2026-01-01, 2027-01-01]
      * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').next(2) // [2026-01-01, 2027-01-01]
      *
      * dayjs('2029-01-01').recurring('R10/2020-01-01/P1Y').next(2) // [2030-01-01-01]
      * dayjs('2029-01-01').recurring('R/P1Y/2030-01-01').next(2) // [2030-01-01-01]
+     *
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(Infinity, { isBefore: '2029-01-01' }) // [2026-01-01, 2027-01-01, 2028-01-01]
+     *
+     * // relative
+     * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(2) // [2026-01-01, 2027-01-01]
+     * dayjs('2025-01-01').recurring('R/P1Y/2030-01-01').next(2) // [2024-01-01, 2023-01-01]
+     *
+     * dayjs('2029-01-01').recurring('R10/2020-01-01/P1Y').next(2) // [2030-01-01-01]
+     * dayjs('2021-01-01').recurring('R10/P1Y/2030-01-01').next(2) // [2020-01-01-01]
      *
      * dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(Infinity, { isBefore: '2029-01-01' }) // [2026-01-01, 2027-01-01, 2028-01-01]
      */
