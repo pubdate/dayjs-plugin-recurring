@@ -112,6 +112,14 @@ export default class Recurring {
     return [...this.relativeAllBetween(...args)].reverse()
   }
 
+  // IS OCCURRENCE
+
+  isOccurrence (date: ConfigType, unit?: OpUnitType): boolean {
+    const arr = this.relativeFirst(Infinity, x => this.dir === 'asc' ? !x.isAfter(date, unit) : !x.isBefore(date, unit))
+    if (arr.length === 0) return false
+    return arr[arr.length - 1].isSame(date, unit)
+  }
+
   // FIRST
 
   #relativeFirst: Dayjs | undefined

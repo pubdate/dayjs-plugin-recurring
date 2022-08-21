@@ -25,7 +25,7 @@ declare module 'dayjs' {
      * dayjs('R3/P1Y/2030-01-01').all() // [2030-01-01, 2029-01-01, 2028-01-01, 2027-01-01]
      * dayjs('R/2020-01-01/P1Y').all() // null
      */
-    all: () => readonly Dayjs[] | null
+    all(): readonly Dayjs[] | null
     /**
      * @returns All occurrences between two dates.
      *
@@ -42,7 +42,24 @@ declare module 'dayjs' {
      * dayjs('R/2020-01-01/P1Y', undefined, '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01, 2025-01-01]
      * dayjs('R/2020-01-10/P1Y', 'month', '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-10, 2024-01-10, 2025-01-10]
      */
-    allBetween: (...args: Parameters<Recurring['relativeAllBetween']>) => readonly Dayjs[]
+    allBetween(...args: Parameters<Recurring['relativeAllBetween']>): readonly Dayjs[]
+    /**
+     * @returns Whether the current date is an occurrence or not.
+     *
+     * @example
+     * dayjs('2023-01-01').recurring('R/2020-01-01/P1Y').isOccurrence() // true
+     * dayjs('2023-01-10').recurring('R/2020-01-01/P1Y').isOccurrence() // false
+     */
+    isOccurrence(): boolean
+    /**
+     * @returns Whether the provided date is an occurrence or not.
+     *
+     * @example
+     * dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-01') // true
+     * dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10') // false
+     * dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10', 'year') // true
+     */
+    isOccurrence(...args: Parameters<Recurring['isOccurrence']>): boolean
     /**
      * @returns
      * - First occurrence.

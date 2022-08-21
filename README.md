@@ -160,6 +160,25 @@ dayjs('R/2020-01-01/P1Y', undefined, '(]').allBetween('2022-01-01', '2025-01-01'
 dayjs('R/2020-01-10/P1Y', 'month', '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-10, 2024-01-10, 2025-01-10]
 ```
 
+### `isOccurrence()`
+
+Checks whether the current date is an occurrence or not.
+
+```js
+dayjs('2023-01-01').recurring('R/2020-01-01/P1Y').isOccurrence() // true
+dayjs('2023-01-10').recurring('R/2020-01-01/P1Y').isOccurrence() // false
+```
+
+### `isOccurrence(date, unit = 'milliseconds')`
+
+Checks whether `date` is an occurrence or not.
+
+```js
+dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-01') // true
+dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10') // false
+dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10', 'year') // true
+```
+
 ### `first()`
 
 Returns the first occurrence. <br/>

@@ -67,6 +67,17 @@ describe('Recurring', () => {
     })
   })
 
+  describe('isOccurrence', () => {
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2019-01-01')).toEqual(false)
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2020-01-01')).toEqual(true)
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2021-01-01')).toEqual(true)
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2030-01-01')).toEqual(true)
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2031-01-01')).toEqual(false)
+
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2020-01-10')).toEqual(false)
+    expect(Recurring.parse('R10/2020-01-01/P1Y').isOccurrence('2020-01-10', 'month')).toEqual(true)
+  })
+
   describe('toString()', () => {
     test('it formats the duration', () => {
       expect(R5Start.toString({ dateFormat })).toEqual('R5/2020-01-01T00:00:00/P1Y2M3W4DT5H6M7S')

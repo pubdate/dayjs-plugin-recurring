@@ -1,4 +1,4 @@
-import type { Dayjs, PluginFunc } from 'dayjs'
+import type { ConfigType, Dayjs, OpUnitType, PluginFunc } from 'dayjs'
 import type { Query } from './recurring'
 
 import Recurring from './recurring'
@@ -23,6 +23,11 @@ const plugin: PluginFunc<{ order?: 'relative' | 'chronological' } | undefined> =
   dayjsClass.prototype.allBetween = function (...args: Parameters<Recurring['relativeAllBetween']>) {
     return this.$recurring![`${order}AllBetween`](...args)
   }
+
+  dayjsClass.prototype.isOccurrence = function (date: ConfigType, unit?: OpUnitType) {
+    if (date == null) return this.$recurring!.isOccurrence(this)
+    return this.$recurring!.isOccurrence(date, unit)
+  } as { (this: Dayjs): boolean, (this: Dayjs, date: ConfigType, unit?: OpUnitType): boolean }
 
   dayjsClass.prototype.first = function (n, query) {
     return this.$recurring![`${order}First`](n, query)
