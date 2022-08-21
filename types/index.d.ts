@@ -27,6 +27,23 @@ declare module 'dayjs' {
      */
     all: () => readonly Dayjs[] | null
     /**
+     * @returns All occurrences between two dates.
+     *
+     * @example
+     * // chronological
+     * dayjs('R/2020-01-01/P1Y').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01]
+     * dayjs('R/P1Y/2030-01-01').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01]
+     * dayjs('R/2020-01-01/P1Y', undefined, '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01, 2025-01-01]
+     * dayjs('R/2020-01-10/P1Y', 'month', '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-10, 2024-01-10, 2025-01-10]
+     *
+     * // relative
+     * dayjs('R/2020-01-01/P1Y').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01]
+     * dayjs('R/P1Y/2030-01-01').allBetween('2022-01-01', '2025-01-01') // [2024-01-01, 2023-01-01]
+     * dayjs('R/2020-01-01/P1Y', undefined, '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01, 2025-01-01]
+     * dayjs('R/2020-01-10/P1Y', 'month', '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-10, 2024-01-10, 2025-01-10]
+     */
+    allBetween: (...args: Parameters<Recurring['relativeAllBetween']>) => readonly Dayjs[]
+    /**
      * @returns
      * - First occurrence.
      * - [chronological]: Or `null` when there is no `start` and no limit.

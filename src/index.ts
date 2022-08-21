@@ -20,6 +20,10 @@ const plugin: PluginFunc<{ order?: 'relative' | 'chronological' } | undefined> =
     return this.$recurring![`${order}All`]()
   }
 
+  dayjsClass.prototype.allBetween = function (...args: Parameters<Recurring['relativeAllBetween']>) {
+    return this.$recurring![`${order}AllBetween`](...args)
+  }
+
   dayjsClass.prototype.first = function (n, query) {
     return this.$recurring![`${order}First`](n, query)
   } as { (this: Dayjs): Dayjs | null, (this: Dayjs, n: number, query?: Query): readonly Dayjs[] | null }

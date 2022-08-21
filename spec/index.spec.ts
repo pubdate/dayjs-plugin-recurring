@@ -44,6 +44,7 @@ describe('dayjs-plugin-recurring', () => {
 
     const date = dayjs('2022-06-20T10:12:14').recurring('R5/2020-01-01/P1Y2M3W4DT5H6M7S')!
     expect(date.all()!.map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14', '2023-09-14T15:18:21', '2024-12-09T20:24:28', '2026-03-07T01:30:35'])
+    expect(date.allBetween('2022-01-01', '2025-01-01')!.map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2023-09-14T15:18:21', '2024-12-09T20:24:28'])
     expect(date.first()!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
     expect(date.first(3)!.map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14'])
     expect(date.last()!.format(dateFormat)).toEqual('2026-03-07T01:30:35')
@@ -59,6 +60,7 @@ describe('dayjs-plugin-recurring', () => {
 
     const date = dayjs('2022-06-20T10:12:14').recurring('R5/2020-01-01/P1Y2M3W4DT5H6M7S')!
     expect(date.all()!.map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14', '2023-09-14T15:18:21', '2024-12-09T20:24:28', '2026-03-07T01:30:35'])
+    expect(date.allBetween('2022-01-01', '2025-01-01')!.map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2023-09-14T15:18:21', '2024-12-09T20:24:28'])
     expect(date.first()!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
     expect(date.first(3)!.map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14'])
     expect(date.last()!.format(dateFormat)).toEqual('2026-03-07T01:30:35')
@@ -74,6 +76,7 @@ describe('dayjs-plugin-recurring', () => {
 
     const date = dayjs('2022-06-20T10:12:14').recurring('R5/2020-01-01/P1Y2M3W4DT5H6M7S')!
     expect(date.all()!.map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14', '2023-09-14T15:18:21', '2024-12-09T20:24:28', '2026-03-07T01:30:35'])
+    expect(date.allBetween('2022-01-01', '2025-01-01')!.map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2023-09-14T15:18:21', '2024-12-09T20:24:28'])
     expect(date.first()!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
     expect(date.first(3)!.map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14'])
     expect(date.last()!.format(dateFormat)).toEqual('2026-03-07T01:30:35')

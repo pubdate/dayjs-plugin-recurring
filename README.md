@@ -148,6 +148,18 @@ dayjs('R3/2020-01-01/P1Y').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01
 dayjs('R/2020-01-01/P1Y').all() // null
 ```
 
+### `allBetween(a, b, unit = 'milliseconds', inclusion = '()')`
+
+Returns all occurrences between `a` and `b`. <br/>
+If you want to limit the granularity to a [unit other than milliseconds](https://day.js.org/docs/en/manipulate/start-of#list-of-all-available-units), pass it as the second parameter. <br/>
+The fourth parameter is about inclusivity. A `[` indicates inclusion of a value. A `(` indicates exclusion.
+
+```js
+dayjs('R/2020-01-01/P1Y').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01]
+dayjs('R/2020-01-01/P1Y', undefined, '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01, 2025-01-01]
+dayjs('R/2020-01-10/P1Y', 'month', '(]').allBetween('2022-01-01', '2025-01-01') // [2023-01-10, 2024-01-10, 2025-01-10]
+```
+
 ### `first()`
 
 Returns the first occurrence. <br/>

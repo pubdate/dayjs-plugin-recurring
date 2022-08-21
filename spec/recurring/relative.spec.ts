@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import Recurring from '../../src/recurring'
 import { R5Start, dateFormat, R5End, R5EndContext, R5Context, R5ContextAsEnd, R5NoContext, nowR5, RStart, REnd, REndContext, RContext, RContextAsEnd, RNoContext, nowR } from './_setup'
 
 describe('Recurring', () => {
@@ -59,6 +60,58 @@ describe('Recurring', () => {
 
       test('it returns an array of dayjs instances with the same recurring', () => {
         R5Start.relativeAll()!.forEach(x => expect(x.$recurring).toBe(R5Start))
+      })
+    })
+
+    describe('relativeAllBetween()', () => {
+      test('it returns an array of dayjs instances (start)', () => {
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2000-01-01', '2010-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual([])
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2000-01-01', '2025-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2020-01-01', '2021-01-01', '2022-01-01', '2023-01-01', '2024-01-01'])
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2022-01-01', '2025-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2023-01-01', '2024-01-01'])
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2025-01-01', '2022-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2023-01-01', '2024-01-01'])
+
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2022-01-01', '2025-01-01', undefined, '[)').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2022-01-01', '2023-01-01', '2024-01-01'])
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2022-01-01', '2025-01-01', undefined, '(]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2023-01-01', '2024-01-01', '2025-01-01'])
+        expect(Recurring.parse('R/2020-01-01/P1Y').relativeAllBetween('2022-01-01', '2025-01-01', undefined, '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2022-01-01', '2023-01-01', '2024-01-01', '2025-01-01'])
+
+        expect(Recurring.parse('R/2020-01-02/P1Y').relativeAllBetween('2022-02-01', '2025-01-01', undefined, '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2023-01-02', '2024-01-02'])
+        expect(Recurring.parse('R/2020-01-02/P1Y').relativeAllBetween('2022-02-01', '2025-01-01', 'month', '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2023-01-02', '2024-01-02', '2025-01-02'])
+        expect(Recurring.parse('R/2020-01-02/P1Y').relativeAllBetween('2022-02-01', '2025-01-01', 'year', '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2022-01-02', '2023-01-02', '2024-01-02', '2025-01-02'])
+      })
+
+      test('it returns an array of dayjs instances (end)', () => {
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('3000-01-01', '3010-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual([])
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('2025-01-01', '3010-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2030-01-01', '2029-01-01', '2028-01-01', '2027-01-01', '2026-01-01'])
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('2022-01-01', '2025-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2024-01-01', '2023-01-01'])
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('2025-01-01', '2022-01-01').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2024-01-01', '2023-01-01'])
+
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('2022-01-01', '2025-01-01', undefined, '[)').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2024-01-01', '2023-01-01', '2022-01-01'])
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('2022-01-01', '2025-01-01', undefined, '(]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2025-01-01', '2024-01-01', '2023-01-01'])
+        expect(Recurring.parse('R/P1Y/2030-01-01').relativeAllBetween('2022-01-01', '2025-01-01', undefined, '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2025-01-01', '2024-01-01', '2023-01-01', '2022-01-01'])
+
+        expect(Recurring.parse('R/P1Y/2030-01-02').relativeAllBetween('2022-02-01', '2025-01-01', undefined, '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2024-01-02', '2023-01-02'])
+        expect(Recurring.parse('R/P1Y/2030-01-02').relativeAllBetween('2022-02-01', '2025-01-01', 'month', '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2025-01-02', '2024-01-02', '2023-01-02'])
+        expect(Recurring.parse('R/P1Y/2030-01-02').relativeAllBetween('2022-02-01', '2025-01-01', 'year', '[]').map(x => x.format('YYYY-MM-DD')))
+          .toEqual(['2025-01-02', '2024-01-02', '2023-01-02', '2022-01-02'])
       })
     })
 

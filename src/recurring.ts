@@ -1,5 +1,5 @@
 import type dayjs from 'dayjs'
-import type { ConfigType, Dayjs } from 'dayjs'
+import type { ConfigType, Dayjs, OpUnitType } from 'dayjs'
 
 import Duration from './duration'
 import { DayjsPluginRecurringError } from './errors'
@@ -96,6 +96,20 @@ export default class Recurring {
     if (this.relativeAll() == null) return null
     if (this.dir === 'asc') return this.relativeAll()
     return [...this.relativeAll()!].reverse()
+  }
+
+  // ALL BETWEEN
+
+  relativeAllBetween (a: ConfigType, b: ConfigType, unit?: OpUnitType, inclusion: `${'[' | '('}${')' | ']'}` = '()'): readonly Dayjs[] {
+    let i = [inclusion[0] === '[', inclusion[1] === ']']
+    if (Recurring.dayjsFactory!(a).isAfter(b)) { [a, b] = [b, a]; i = [i[1], i[0]] } // REVERSE a/b AND i IF a > b
+    return this.relativeFirst(Infinity, date => this.dir === 'asc' ? !date.isAfter(b, unit) : !date.isBefore(a, unit))
+      .filter(date => (i[0] ? !date.isBefore(a, unit) : date.isAfter(a, unit)) && (i[1] ? !date.isAfter(b, unit) : date.isBefore(b, unit)))
+  }
+
+  chronologicalAllBetween (...args: Parameters<Recurring['relativeAllBetween']>): readonly Dayjs[] {
+    if (this.dir === 'asc') return this.relativeAllBetween(...args)
+    return [...this.relativeAllBetween(...args)].reverse()
   }
 
   // FIRST
