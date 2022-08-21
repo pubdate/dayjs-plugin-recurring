@@ -13,6 +13,7 @@ declare module 'dayjs' {
      * @returns
      * - All occurrences.
      * - Or `null` when there is no limit.
+     * Use `allBetween` to avoid null errors.
      *
      * @example
      * // chronological

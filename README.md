@@ -35,9 +35,9 @@ dayjs.extend(recurring)
 
 ### order
 
-#### chronological (default)
+<details>
 
-In chronological order:
+In **chronological** order (default):
 
 - The first occurrence is always the oldest.
 - The sequence continues from the oldest to the newest.
@@ -49,9 +49,7 @@ dayjs('R3/2020-01-01/P1Y').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01
 dayjs('R3/P1Y/2023-01-01').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01-01]
 ```
 
-#### relative
-
-In relative order:
+In **relative** order:
 
 - The first occurrence is `start` if provided, or `end` if provided, or `context` (the current dayjs instance).
 - If `start` is provided or `end` is not, the sequence continues from the oldest to the newest. And from the newest to the oldest otherwise.
@@ -65,7 +63,7 @@ dayjs('R3/2020-01-01/P1Y').all() // [2020-01-01, 2021-01-01, 2022-01-01, 2023-01
 dayjs('R3/P1Y/2023-01-01').all() // [2023-01-01, 2022-01-01, 2021-01-01, 2020-01-01]
 ```
 
-#### Comparison
+Comparison:
 <!-- markdownlint-disable-next-line MD040 -->
 ```
 all/first         1 - 2 - 3 - 4 - 5
@@ -89,9 +87,11 @@ relative (start)         now ----->   [4, 5]
 relative (end)    <----- now          [2, 1]
 ```
 
+</details>
+
 ## API
 
-> 💡 Unless explicitly stated otherwise, all examples are in **chronological** order.
+> 💡 Unless explicitly stated otherwise, all examples are in [**chronological** order](#order).
 
 ### Create a recurring dayjs instance
 
@@ -138,7 +138,29 @@ Returns the recurring config.
 dayjs('R10/2020-01-01/P1Y').recurring().toString({ dateFormat: 'YYYY-MM-DD' }) // 'R10/2020-01-01/P1Y'
 ```
 
+### `isOccurrence()`
+
+Checks whether the current date is an occurrence or not.
+
+```js
+dayjs('2023-01-01').recurring('R/2020-01-01/P1Y').isOccurrence() // true
+dayjs('2023-01-10').recurring('R/2020-01-01/P1Y').isOccurrence() // false
+```
+
+### `isOccurrence(date, unit = 'milliseconds')`
+
+Checks whether `date` is an occurrence or not. <br/>
+If you want to limit the granularity to a [unit other than milliseconds](https://day.js.org/docs/en/manipulate/start-of#list-of-all-available-units), pass it as the second parameter. <br/>
+
+```js
+dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-01') // true
+dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10') // false
+dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10', 'year') // true
+```
+
 ### `all()`
+
+> 💡 Use [`allBetween`](#allbetweena-b-unit--milliseconds-inclusion--) to avoid null errors.
 
 Returns all occurrences. <br/>
 Or `null` when there is no limit.
@@ -151,32 +173,13 @@ dayjs('R/2020-01-01/P1Y').all() // null
 ### `allBetween(a, b, unit = 'milliseconds', inclusion = '()')`
 
 Returns all occurrences between `a` and `b`. <br/>
-If you want to limit the granularity to a [unit other than milliseconds](https://day.js.org/docs/en/manipulate/start-of#list-of-all-available-units), pass it as the second parameter. <br/>
+If you want to limit the granularity to a [unit other than milliseconds](https://day.js.org/docs/en/manipulate/start-of#list-of-all-available-units), pass it as the third parameter. <br/>
 The fourth parameter is about inclusivity. A `[` indicates inclusion of a value. A `(` indicates exclusion.
 
 ```js
 dayjs('R/2020-01-01/P1Y').allBetween('2022-01-01', '2025-01-01') // [2023-01-01, 2024-01-01]
 dayjs('R/2020-01-01/P1Y').allBetween('2022-01-01', '2025-01-01', undefined, '(]') // [2023-01-01, 2024-01-01, 2025-01-01]
 dayjs('R/2020-01-10/P1Y').allBetween('2022-01-01', '2025-01-01', 'month', '(]') // [2023-01-10, 2024-01-10, 2025-01-10]
-```
-
-### `isOccurrence()`
-
-Checks whether the current date is an occurrence or not.
-
-```js
-dayjs('2023-01-01').recurring('R/2020-01-01/P1Y').isOccurrence() // true
-dayjs('2023-01-10').recurring('R/2020-01-01/P1Y').isOccurrence() // false
-```
-
-### `isOccurrence(date, unit = 'milliseconds')`
-
-Checks whether `date` is an occurrence or not.
-
-```js
-dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-01') // true
-dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10') // false
-dayjs('R/2020-01-01/P1Y').isOccurrence('2023-01-10', 'year') // true
 ```
 
 ### `first()`
@@ -262,7 +265,7 @@ dayjs('2030-01-01').recurring('R10/2020-01-01/P1Y').next() // null
 
 ### `next(n, query)`
 
-Returns the `n` previous occurrences that match [`query`](#query).
+Returns the `n` next occurrences that match [`query`](#query).
 
 ```js
 dayjs('2025-01-01').recurring('R/2020-01-01/P1Y').next(2) // [2026-01-01, 2027-01-01]
