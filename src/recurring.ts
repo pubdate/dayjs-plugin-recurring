@@ -214,30 +214,26 @@ export default class Recurring {
   relativeNext (date: Dayjs, n: number, query?: Query): readonly Dayjs[]
   relativeNext (date: Dayjs, n?: number, query?: Query): Dayjs | null | readonly Dayjs[] {
     if (n == null) { // () => Dayjs
-      if (this.times != null && this.#relativeHistory(date).length >= this.times) return null
-      if (this.relativeFirst()[this.dir === 'asc' ? 'isAfter' : 'isBefore'](date)) return this.relativeFirst()
-      if (this.#relativeHistory(date).length !== 0) {
-        date = this.#setRecurring(
-          this.duration._addToDate(this.#relativeHistory(date)[this.#relativeHistory(date).length - 1], this.dir === 'asc' ? 1 : -1),
-          { $recurringRelativeHistory: this.#relativeHistory(date) }
-        )
+      if (this.relativeFirst()[this.dir === 'asc' ? 'isAfter' : 'isBefore'](date)) return this.relativeFirst() // date IS BEFORE first
+
+      const history = [...this.#relativeHistory(date)]
+      if (history.length === 0) history.push(this.relativeFirst()) // date IS first (-> date IS AN OCCURRENCE)
+
+      let d = this.#setRecurring(this.duration._addToDate(history[history.length - 1], this.dir === 'asc' ? 1 : -1), { $recurringRelativeHistory: history })
+      if (d.isSame(date)) { // date IS AN OCCURRENCE
+        history.push(d)
+        d = this.#setRecurring(this.duration._addToDate(d, this.dir === 'asc' ? 1 : -1), { $recurringRelativeHistory: history })
       }
-      return this.#setRecurring(
-        this.duration._addToDate(date, this.dir === 'asc' ? 1 : -1),
-        { $recurringRelativeHistory: [...this.#relativeHistory(date), date] }
-      )
+
+      return this.times == null || history.length <= this.times ? d : null
     } else { // (n) => Dayjs[]
-      let succ = this.#relativeHistory(date).length === 0
-        ? this.relativeFirst()
-        : this.relativeNext(this.#relativeHistory(date)[this.#relativeHistory(date).length - 1])
-      if (succ == null) return []
-      if (succ.isSame(date)) succ = this.relativeNext(succ)
       const result: Dayjs[] = []
+      let d
       for (let i = 0; i < n; i++) {
-        if (succ == null) break
-        if (!this.#validateQuery(succ, query)) break
-        result.push(succ)
-        succ = this.relativeNext(succ)
+        d = this.relativeNext(d ?? date)
+        if (d == null) break
+        if (!this.#validateQuery(d, query)) break
+        result.push(d)
       }
       return result
     }

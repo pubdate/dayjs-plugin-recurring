@@ -255,45 +255,45 @@ describe('Recurring', () => {
 
     describe('relativePrev()', () => {
       test('it returns the previous occurrence', () => {
-        expect(R5Start.relativePrev(dayjs('3000-01-01'))!.format(dateFormat)).toEqual('2026-03-07T01:30:35')
-        expect(R5Start.relativePrev(dayjs('2000-01-01'))).toEqual(null)
+        expect(R5Start.relativePrev(dayjs('2026-03-07T01:30:36'))!.format(dateFormat)).toEqual('2026-03-07T01:30:35') // after last (non-occurrence)
+        expect(R5Start.relativePrev(dayjs('2026-03-07T01:30:35'))!.format(dateFormat)).toEqual('2024-12-09T20:24:28') // after last - 1 (occurrence)
+        expect(R5Start.relativePrev(dayjs('2024-12-09T20:24:29'))!.format(dateFormat)).toEqual('2024-12-09T20:24:28') // after last - 1 (non-occurrence)
+        expect(R5Start.relativePrev(dayjs('2021-03-26T05:06:07'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00') // after first (occurrence)
+        expect(R5Start.relativePrev(dayjs('2020-01-01T00:00:01'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00') // after first (non-occurrence)
+        expect(R5Start.relativePrev(dayjs('2020-01-01T00:00:00'))).toEqual(null) // first
 
-        expect(R5Start.relativePrev(dayjs('2026-03-07T01:30:36'))!.format(dateFormat)).toEqual('2026-03-07T01:30:35')
-        expect(R5Start.relativePrev(dayjs('2026-03-07T01:30:35'))!.format(dateFormat)).toEqual('2024-12-09T20:24:28')
-        expect(R5Start.relativePrev(dayjs('2024-12-09T20:24:28'))!.format(dateFormat)).toEqual('2023-09-14T15:18:21')
-        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:21'))!.format(dateFormat)).toEqual('2022-06-20T10:12:14')
-        expect(R5Start.relativePrev(dayjs('2022-06-20T10:12:14'))!.format(dateFormat)).toEqual('2021-03-26T05:06:07')
-        expect(R5Start.relativePrev(dayjs('2021-03-26T05:06:07'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
-        expect(R5Start.relativePrev(dayjs('2020-01-01T00:00:00'))).toEqual(null)
-
-        expect(R5End.relativePrev(dayjs('3000-01-01'))).toEqual(null)
-        expect(R5End.relativePrev(dayjs('2000-01-01'))!.format(dateFormat)).toEqual('2013-10-28T22:29:25')
-
-        expect(R5End.relativePrev(dayjs('2013-10-28T22:29:24'))!.format(dateFormat)).toEqual('2013-10-28T22:29:25')
-        expect(R5End.relativePrev(dayjs('2013-10-28T22:29:25'))!.format(dateFormat)).toEqual('2015-01-23T03:35:32')
-        expect(R5End.relativePrev(dayjs('2015-01-23T03:35:32'))!.format(dateFormat)).toEqual('2016-04-17T08:41:39')
-        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:39'))!.format(dateFormat)).toEqual('2017-07-12T13:47:46')
-        expect(R5End.relativePrev(dayjs('2017-07-12T13:47:46'))!.format(dateFormat)).toEqual('2018-10-06T18:53:53')
-        expect(R5End.relativePrev(dayjs('2018-10-06T18:53:53'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
-        expect(R5End.relativePrev(dayjs('2020-01-01T00:00:00'))).toEqual(null)
+        expect(R5End.relativePrev(dayjs('2013-10-28T22:29:24'))!.format(dateFormat)).toEqual('2013-10-28T22:29:25') // after last (non-occurrence)
+        expect(R5End.relativePrev(dayjs('2013-10-28T22:29:25'))!.format(dateFormat)).toEqual('2015-01-23T03:35:32') // after last - 1 (occurrence)
+        expect(R5End.relativePrev(dayjs('2015-01-23T03:35:31'))!.format(dateFormat)).toEqual('2015-01-23T03:35:32') // after last - 1 (non-occurrence)
+        expect(R5End.relativePrev(dayjs('2018-10-06T18:53:53'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00') // after first (occurrence)
+        expect(R5End.relativePrev(dayjs('2019-12-31T23:59:59'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00') // after first (non-occurrence)
+        expect(R5End.relativePrev(dayjs('2020-01-01T00:00:00'))).toEqual(null) // first
       })
 
       test('it returns the n previous occurrences', () => {
-        expect(R5Start.relativePrev(dayjs('3000-01-01'), 3).map(x => x.format(dateFormat))).toEqual(['2026-03-07T01:30:35', '2024-12-09T20:24:28', '2023-09-14T15:18:21'])
-        expect(R5Start.relativePrev(dayjs('2000-01-01'), 3).map(x => x.format(dateFormat))).toEqual([])
+        expect(R5Start.relativePrev(dayjs('2026-03-07T01:30:36'), 3).map(x => x.format(dateFormat))).toEqual(['2026-03-07T01:30:35', '2024-12-09T20:24:28', '2023-09-14T15:18:21']) // after last (non-occurrence)
+        expect(R5Start.relativePrev(dayjs('2026-03-07T01:30:35'), 3).map(x => x.format(dateFormat))).toEqual(['2024-12-09T20:24:28', '2023-09-14T15:18:21', '2022-06-20T10:12:14']) // after last - 1 (occurrence)
+        expect(R5Start.relativePrev(dayjs('2024-12-09T20:24:29'), 3).map(x => x.format(dateFormat))).toEqual(['2024-12-09T20:24:28', '2023-09-14T15:18:21', '2022-06-20T10:12:14']) // after last - 1 (non-occurrence)
+        expect(R5Start.relativePrev(dayjs('2021-03-26T05:06:07'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00']) // after first (occurrence)
+        expect(R5Start.relativePrev(dayjs('2020-01-01T00:00:01'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00']) // after first (non-occurrence)
+        expect(R5Start.relativePrev(dayjs('2020-01-01T00:00:00'), 3).map(x => x.format(dateFormat))).toEqual([]) // first
 
-        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:21'), 1).map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14'])
-        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:21'), 2).map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2021-03-26T05:06:07'])
-        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:21'), 3).map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2021-03-26T05:06:07', '2020-01-01T00:00:00'])
-        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:21'), 4).map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2021-03-26T05:06:07', '2020-01-01T00:00:00'])
+        expect(R5Start.relativePrev(dayjs('2022-06-20T10:12:14'), 0).map(x => x.format(dateFormat))).toEqual([])
+        expect(R5Start.relativePrev(dayjs('2022-06-20T10:12:14'), 1).map(x => x.format(dateFormat))).toEqual(['2021-03-26T05:06:07'])
+        expect(R5Start.relativePrev(dayjs('2022-06-20T10:12:14'), 2).map(x => x.format(dateFormat))).toEqual(['2021-03-26T05:06:07', '2020-01-01T00:00:00'])
+        expect(R5Start.relativePrev(dayjs('2022-06-20T10:12:14'), 3).map(x => x.format(dateFormat))).toEqual(['2021-03-26T05:06:07', '2020-01-01T00:00:00'])
 
-        expect(R5End.relativePrev(dayjs('3000-01-01'), 3).map(x => x.format(dateFormat))).toEqual([])
-        expect(R5End.relativePrev(dayjs('2000-01-01'), 3).map(x => x.format(dateFormat))).toEqual(['2013-10-28T22:29:25', '2015-01-23T03:35:32', '2016-04-17T08:41:39'])
+        expect(R5End.relativePrev(dayjs('2013-10-28T22:29:24'), 3).map(x => x.format(dateFormat))).toEqual(['2013-10-28T22:29:25', '2015-01-23T03:35:32', '2016-04-17T08:41:39']) // after last (non-occurrence)
+        expect(R5End.relativePrev(dayjs('2013-10-28T22:29:25'), 3).map(x => x.format(dateFormat))).toEqual(['2015-01-23T03:35:32', '2016-04-17T08:41:39', '2017-07-12T13:47:46']) // after last - 1 (occurrence)
+        expect(R5End.relativePrev(dayjs('2015-01-23T03:35:31'), 3).map(x => x.format(dateFormat))).toEqual(['2015-01-23T03:35:32', '2016-04-17T08:41:39', '2017-07-12T13:47:46']) // after last - 1 (non-occurrence)
+        expect(R5End.relativePrev(dayjs('2018-10-06T18:53:53'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00']) // after first (occurrence)
+        expect(R5End.relativePrev(dayjs('2019-12-31T23:59:59'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00']) // after first (non-occurrence)
+        expect(R5End.relativePrev(dayjs('2020-01-01T00:00:00'), 3).map(x => x.format(dateFormat))).toEqual([]) // first
 
-        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:39'), 1).map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46'])
-        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:39'), 2).map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46', '2018-10-06T18:53:53'])
-        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:39'), 3).map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46', '2018-10-06T18:53:53', '2020-01-01T00:00:00'])
-        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:39'), 4).map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46', '2018-10-06T18:53:53', '2020-01-01T00:00:00'])
+        expect(R5End.relativePrev(dayjs('2017-07-12T13:47:46'), 0).map(x => x.format(dateFormat))).toEqual([])
+        expect(R5End.relativePrev(dayjs('2017-07-12T13:47:46'), 1).map(x => x.format(dateFormat))).toEqual(['2018-10-06T18:53:53'])
+        expect(R5End.relativePrev(dayjs('2017-07-12T13:47:46'), 2).map(x => x.format(dateFormat))).toEqual(['2018-10-06T18:53:53', '2020-01-01T00:00:00'])
+        expect(R5End.relativePrev(dayjs('2017-07-12T13:47:46'), 3).map(x => x.format(dateFormat))).toEqual(['2018-10-06T18:53:53', '2020-01-01T00:00:00'])
       })
 
       test('it returns the n previous occurrences that match query', () => {
@@ -316,50 +316,55 @@ describe('Recurring', () => {
         expect(R5End.relativePrev(dayjs('2015-01-23T03:35:32'), 3, { isAfter: '2017-07-12T13:47:46' })!.map(x => x.format(dateFormat))).toEqual([])
         expect(R5End.relativePrev(dayjs('2015-01-23T03:35:32'), 3, { isSameOrAfter: '2017-07-12T13:47:46' })!.map(x => x.format(dateFormat))).toEqual([])
         expect(R5End.relativePrev(dayjs('2015-01-23T03:35:32'), 3, { isAfter: '1000-00-00' })!.map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39', '2017-07-12T13:47:46', '2018-10-06T18:53:53'])
+
+        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:22'), 3, { isSameOrAfter: '2022-06-20T10:12:14' })!.map(x => x.format(dateFormat))).toEqual(['2023-09-14T15:18:21', '2022-06-20T10:12:14'])
+        expect(R5Start.relativePrev(dayjs('2023-09-14T15:18:20'), 3, { isSameOrAfter: '2022-06-20T10:12:14' })!.map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14'])
+        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:38'), 3, { isSameOrBefore: '2017-07-12T13:47:46' })!.map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39', '2017-07-12T13:47:46'])
+        expect(R5End.relativePrev(dayjs('2016-04-17T08:41:40'), 3, { isSameOrBefore: '2017-07-12T13:47:46' })!.map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46'])
       })
     })
 
     describe('relativeNext()', () => {
       test('it returns the next occurrence', () => {
-        expect(R5Start.relativeNext(dayjs('3000-01-01'))).toEqual(null)
-        expect(R5Start.relativeNext(dayjs('2000-01-01'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
+        expect(R5Start.relativeNext(dayjs('2019-12-31T23:59:59'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00') // before first (non-occurrence)
+        expect(R5Start.relativeNext(dayjs('2020-01-01T00:00:00'))!.format(dateFormat)).toEqual('2021-03-26T05:06:07') // before second (occurrence)
+        expect(R5Start.relativeNext(dayjs('2021-03-26T05:06:05'))!.format(dateFormat)).toEqual('2021-03-26T05:06:07') // before second (non-occurrence)
+        expect(R5Start.relativeNext(dayjs('2024-12-09T20:24:28'))!.format(dateFormat)).toEqual('2026-03-07T01:30:35') // before last (occurrence)
+        expect(R5Start.relativeNext(dayjs('2026-03-07T01:30:34'))!.format(dateFormat)).toEqual('2026-03-07T01:30:35') // before last (non-occurrence)
+        expect(R5Start.relativeNext(dayjs('2026-03-07T01:30:35'))).toEqual(null) // last
 
-        expect(R5Start.relativeNext(dayjs('2019-12-31T23:59:59'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
-        expect(R5Start.relativeNext(dayjs('2020-01-01T00:00:00'))!.format(dateFormat)).toEqual('2021-03-26T05:06:07')
-        expect(R5Start.relativeNext(dayjs('2021-03-26T05:06:07'))!.format(dateFormat)).toEqual('2022-06-20T10:12:14')
-        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:14'))!.format(dateFormat)).toEqual('2023-09-14T15:18:21')
-        expect(R5Start.relativeNext(dayjs('2023-09-14T15:18:21'))!.format(dateFormat)).toEqual('2024-12-09T20:24:28')
-        expect(R5Start.relativeNext(dayjs('2024-12-09T20:24:28'))!.format(dateFormat)).toEqual('2026-03-07T01:30:35')
-        expect(R5Start.relativeNext(dayjs('2026-03-07T01:30:35'))).toEqual(null)
-
-        expect(R5End.relativeNext(dayjs('3000-01-01'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
-        expect(R5End.relativeNext(dayjs('2000-01-01'))).toEqual(null)
-
-        expect(R5End.relativeNext(dayjs('2020-01-01T00:00:01'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00')
-        expect(R5End.relativeNext(dayjs('2020-01-01T00:00:00'))!.format(dateFormat)).toEqual('2018-10-06T18:53:53')
-        expect(R5End.relativeNext(dayjs('2018-10-06T18:53:53'))!.format(dateFormat)).toEqual('2017-07-12T13:47:46')
-        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:46'))!.format(dateFormat)).toEqual('2016-04-17T08:41:39')
-        expect(R5End.relativeNext(dayjs('2016-04-17T08:41:39'))!.format(dateFormat)).toEqual('2015-01-23T03:35:32')
-        expect(R5End.relativeNext(dayjs('2015-01-23T03:35:32'))!.format(dateFormat)).toEqual('2013-10-28T22:29:25')
-        expect(R5End.relativeNext(dayjs('2013-10-28T22:29:25'))).toEqual(null)
+        expect(R5End.relativeNext(dayjs('2020-01-01T00:00:01'))!.format(dateFormat)).toEqual('2020-01-01T00:00:00') // before first (non-occurrence)
+        expect(R5End.relativeNext(dayjs('2020-01-01T00:00:00'))!.format(dateFormat)).toEqual('2018-10-06T18:53:53') // before second (occurrence)
+        expect(R5End.relativeNext(dayjs('2018-10-06T18:53:54'))!.format(dateFormat)).toEqual('2018-10-06T18:53:53') // before second (non-occurrence)
+        expect(R5End.relativeNext(dayjs('2015-01-23T03:35:32'))!.format(dateFormat)).toEqual('2013-10-28T22:29:25') // before last (occurrence)
+        expect(R5End.relativeNext(dayjs('2013-10-28T22:29:26'))!.format(dateFormat)).toEqual('2013-10-28T22:29:25') // before last (non-occurrence)
+        expect(R5End.relativeNext(dayjs('2013-10-28T22:29:25'))).toEqual(null) // last
       })
 
       test('it returns the n next occurrences', () => {
-        expect(R5Start.relativeNext(dayjs('3000-01-01'), 3).map(x => x.format(dateFormat))).toEqual([])
-        expect(R5Start.relativeNext(dayjs('2000-01-01'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14'])
+        expect(R5Start.relativeNext(dayjs('2019-12-31T23:59:59'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2021-03-26T05:06:07', '2022-06-20T10:12:14']) // before first (non-occurrence)
+        expect(R5Start.relativeNext(dayjs('2020-01-01T00:00:00'), 3).map(x => x.format(dateFormat))).toEqual(['2021-03-26T05:06:07', '2022-06-20T10:12:14', '2023-09-14T15:18:21']) // before second (occurrence)
+        expect(R5Start.relativeNext(dayjs('2021-03-26T05:06:06'), 3).map(x => x.format(dateFormat))).toEqual(['2021-03-26T05:06:07', '2022-06-20T10:12:14', '2023-09-14T15:18:21']) // before second (non-occurrence)
+        expect(R5Start.relativeNext(dayjs('2024-12-09T20:24:28'), 3).map(x => x.format(dateFormat))).toEqual(['2026-03-07T01:30:35']) // before last (occurrence)
+        expect(R5Start.relativeNext(dayjs('2026-03-07T01:30:34'), 3).map(x => x.format(dateFormat))).toEqual(['2026-03-07T01:30:35']) // before last (non-occurrence)
+        expect(R5Start.relativeNext(dayjs('2026-03-07T01:30:35'), 3).map(x => x.format(dateFormat))).toEqual([]) // last
 
-        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:14'), 1).map(x => x.format(dateFormat))).toEqual(['2023-09-14T15:18:21'])
-        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:14'), 2).map(x => x.format(dateFormat))).toEqual(['2023-09-14T15:18:21', '2024-12-09T20:24:28'])
-        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:14'), 3).map(x => x.format(dateFormat))).toEqual(['2023-09-14T15:18:21', '2024-12-09T20:24:28', '2026-03-07T01:30:35'])
-        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:14'), 4).map(x => x.format(dateFormat))).toEqual(['2023-09-14T15:18:21', '2024-12-09T20:24:28', '2026-03-07T01:30:35'])
+        expect(R5Start.relativeNext(dayjs('2023-09-14T15:18:21'), 0).map(x => x.format(dateFormat))).toEqual([])
+        expect(R5Start.relativeNext(dayjs('2023-09-14T15:18:21'), 1).map(x => x.format(dateFormat))).toEqual(['2024-12-09T20:24:28'])
+        expect(R5Start.relativeNext(dayjs('2023-09-14T15:18:21'), 2).map(x => x.format(dateFormat))).toEqual(['2024-12-09T20:24:28', '2026-03-07T01:30:35'])
+        expect(R5Start.relativeNext(dayjs('2023-09-14T15:18:21'), 3).map(x => x.format(dateFormat))).toEqual(['2024-12-09T20:24:28', '2026-03-07T01:30:35'])
 
-        expect(R5End.relativeNext(dayjs('3000-01-01'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2018-10-06T18:53:53', '2017-07-12T13:47:46'])
-        expect(R5End.relativeNext(dayjs('2000-01-01'), 3).map(x => x.format(dateFormat))).toEqual([])
+        expect(R5End.relativeNext(dayjs('2020-01-01T00:00:01'), 3).map(x => x.format(dateFormat))).toEqual(['2020-01-01T00:00:00', '2018-10-06T18:53:53', '2017-07-12T13:47:46']) // before first (non-occurrence)
+        expect(R5End.relativeNext(dayjs('2020-01-01T00:00:00'), 3).map(x => x.format(dateFormat))).toEqual(['2018-10-06T18:53:53', '2017-07-12T13:47:46', '2016-04-17T08:41:39']) // before second (occurrence)
+        expect(R5End.relativeNext(dayjs('2018-10-06T18:53:54'), 3).map(x => x.format(dateFormat))).toEqual(['2018-10-06T18:53:53', '2017-07-12T13:47:46', '2016-04-17T08:41:39']) // before second (non-occurrence)
+        expect(R5End.relativeNext(dayjs('2015-01-23T03:35:32'), 3).map(x => x.format(dateFormat))).toEqual(['2013-10-28T22:29:25']) // before last (occurrence)
+        expect(R5End.relativeNext(dayjs('2013-10-28T22:29:26'), 3).map(x => x.format(dateFormat))).toEqual(['2013-10-28T22:29:25']) // before last (non-occurrence)
+        expect(R5End.relativeNext(dayjs('2013-10-28T22:29:25'), 3).map(x => x.format(dateFormat))).toEqual([]) // last
 
-        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:46'), 1).map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39'])
-        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:46'), 2).map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39', '2015-01-23T03:35:32'])
-        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:46'), 3).map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39', '2015-01-23T03:35:32', '2013-10-28T22:29:25'])
-        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:46'), 4).map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39', '2015-01-23T03:35:32', '2013-10-28T22:29:25'])
+        expect(R5End.relativeNext(dayjs('2016-04-17T08:41:39'), 0).map(x => x.format(dateFormat))).toEqual([])
+        expect(R5End.relativeNext(dayjs('2016-04-17T08:41:39'), 1).map(x => x.format(dateFormat))).toEqual(['2015-01-23T03:35:32'])
+        expect(R5End.relativeNext(dayjs('2016-04-17T08:41:39'), 2).map(x => x.format(dateFormat))).toEqual(['2015-01-23T03:35:32', '2013-10-28T22:29:25'])
+        expect(R5End.relativeNext(dayjs('2016-04-17T08:41:39'), 3).map(x => x.format(dateFormat))).toEqual(['2015-01-23T03:35:32', '2013-10-28T22:29:25'])
       })
 
       test('it returns the n next occurrences that match query', () => {
@@ -382,6 +387,11 @@ describe('Recurring', () => {
         expect(R5End.relativeNext(dayjs('2018-10-06T18:53:53'), 3, { isAfter: '2016-04-17T08:41:39' })!.map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46'])
         expect(R5End.relativeNext(dayjs('2018-10-06T18:53:53'), 3, { isSameOrAfter: '2016-04-17T08:41:39' })!.map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46', '2016-04-17T08:41:39'])
         expect(R5End.relativeNext(dayjs('2018-10-06T18:53:53'), 3, { isAfter: '1000-00-00' })!.map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46', '2016-04-17T08:41:39', '2015-01-23T03:35:32'])
+
+        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:13'), 3, { isSameOrBefore: '2023-09-14T15:18:21' })!.map(x => x.format(dateFormat))).toEqual(['2022-06-20T10:12:14', '2023-09-14T15:18:21'])
+        expect(R5Start.relativeNext(dayjs('2022-06-20T10:12:15'), 3, { isSameOrBefore: '2023-09-14T15:18:21' })!.map(x => x.format(dateFormat))).toEqual(['2023-09-14T15:18:21'])
+        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:47'), 3, { isSameOrAfter: '2016-04-17T08:41:39' })!.map(x => x.format(dateFormat))).toEqual(['2017-07-12T13:47:46', '2016-04-17T08:41:39'])
+        expect(R5End.relativeNext(dayjs('2017-07-12T13:47:45'), 3, { isSameOrAfter: '2016-04-17T08:41:39' })!.map(x => x.format(dateFormat))).toEqual(['2016-04-17T08:41:39'])
       })
     })
   })
